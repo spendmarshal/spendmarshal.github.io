@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpendMarshal: a spend firewall for AI agents</title>
+<meta name="description" content="Per-agent budgets that only narrow when delegated, human approval above your threshold, and a signed record of every model call your auditor can verify without trusting anyone. Self-hosted and open source.">
+<style>
+  :root {
+    --bg: #fbfaf7; --fg: #1d1f21; --muted: #5b6168; --line: #e3e0d8; --card: #ffffff; --accent: #1f6f5c; --accent-fg: #ffffff; --warn: #8a5a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #121416; --fg: #e8e6e1; --muted: #a2a7ad; --line: #2b2f33; --card: #191c1f; --accent: #5fc2a5; --accent-fg: #0d1512; --warn: #e0b45a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 64px; }
+  header { padding: 64px 0 32px; }
+  .eyebrow { color: var(--accent); font-weight: 600; letter-spacing: .02em; font-size: 14px; text-transform: uppercase; }
+  h1 { font-size: clamp(32px, 6vw, 48px); line-height: 1.15; margin: 12px 0 16px; }
+  h2 { font-size: 24px; margin: 48px 0 12px; }
+  h3 { font-size: 18px; margin: 0 0 6px; }
+  p.lead { font-size: 20px; color: var(--muted); max-width: 680px; }
+  .cta { display: inline-block; margin-top: 16px; background: var(--accent); color: var(--accent-fg); padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+  .step { color: var(--accent); font-weight: 700; }
+  ul.tight { padding-left: 20px; margin: 8px 0; }
+  ul.tight li { margin: 4px 0; }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .note { color: var(--warn); font-size: 15px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  form { display: grid; gap: 12px; max-width: 560px; }
+  label { font-weight: 600; font-size: 15px; }
+  input, textarea, select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--fg); font: inherit; }
+  textarea { min-height: 88px; }
+  button { background: var(--accent); color: var(--accent-fg); border: 0; padding: 12px 20px; border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; justify-self: start; }
+  details { border-top: 1px solid var(--line); padding: 12px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  footer { border-top: 1px solid var(--line); margin-top: 56px; padding-top: 20px; color: var(--muted); font-size: 14px; }
+  code { font-size: 15px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">For agencies and teams running AI agents for clients</div>
+    <h1>A spend firewall for your AI agents</h1>
+    <p class="lead">Budgets per agent that can only narrow when an agent delegates. A person approves anything above your threshold. Every model call leaves a signed record your finance team, your customer or your auditor can check, without trusting you or us.</p>
+    <p>Self-hosted. Open source (Apache-2.0). Your keys and your traffic never leave your infrastructure.</p>
+    <a class="cta" href="#founding">Become a founding partner</a>
+  </header>
+
+  <section>
+    <h2>Who it is for</h2>
+    <p>Agencies, consultancies and product teams whose agents call OpenAI, Anthropic, Gemini or other models through LiteLLM on client work, and who have had to answer one of these:</p>
+    <ul class="tight">
+      <li>“Why did this agent cost us that much last month?”</li>
+      <li>“Who allowed it to do that?”</li>
+      <li>“Why is this on our invoice?” from a client, or “Can you prove what your agents did with our account?” from a customer, finance or security.</li>
+    </ul>
+    <p>Start with the free check-up: run it on last month's export on your own laptop. Nothing is installed and nothing leaves your machine; share the one-page report only if you want to talk.</p>
+    <p><code>npx @spendmarshal/cli audit-logs spend-logs.json</code></p>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <div class="grid">
+      <div class="card"><div class="step">1</div><h3>Sits beside your model gateway</h3><p>A hook in your LiteLLM proxy asks the firewall before each call and reports the real cost after it. Nothing is rerouted through anyone else.</p></div>
+      <div class="card"><div class="step">2</div><h3>Every agent gets a credential</h3><p>Each credential carries a budget, a rate and the models it may use. A sub-agent's credential is cut from its parent's and can only be narrower, never wider.</p></div>
+      <div class="card"><div class="step">3</div><h3>Approval above your line</h3><p>A call over your threshold waits for a named person to approve it, and the approval itself is signed.</p></div>
+      <div class="card"><div class="step">4</div><h3>A statement your client can verify</h3><p>Every decision, approval and call becomes a signed, hash-chained receipt. At month end each client gets a statement of what its agents spent and who approved what, and anyone can verify it offline with an open specification and a short, standard-library Python verifier.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Keep your current budgets; add what they do not cover</h2>
+    <table>
+      <tr><th></th><th>Gateway budgets you may already use</th><th>This firewall adds</th></tr>
+      <tr><td>Spend limits</td><td>Per key, team, user or model</td><td>Per agent and per sub-agent, where a delegated agent can never get more than its parent</td></tr>
+      <tr><td>Above a threshold</td><td>The call is blocked</td><td>A named person approves or rejects it, and the decision is signed</td></tr>
+      <tr><td>Afterwards</td><td>Logs and dashboards in the vendor's tool</td><td>A tamper-evident record a third party verifies without access to your systems</td></tr>
+      <tr><td>Where it runs</td><td>Often a vendor's cloud</td><td>Only on your infrastructure</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Honest status</h2>
+    <div class="two">
+      <div class="card">
+        <h3>Built and tested</h3>
+        <ul class="tight">
+          <li>The free check-up: an offline report on a LiteLLM spend-log export, run on your own laptop with one command (published on npm)</li>
+          <li>The policy engine: budgets with periods, velocity and rate limits, allowlists, approval rules</li>
+          <li>Delegated credentials that can only narrow</li>
+          <li>Signed approvals; signed, hash-chained receipts</li>
+          <li>The open evidence specification, its test vectors and two independent verifiers</li>
+          <li>Several instances on one Postgres database</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Being built with founding partners</h3>
+        <ul class="tight">
+          <li>The LiteLLM hook with ceilings per client and per run</li>
+          <li>The month-end statement per client, from the first month of the pilot</li>
+          <li>Approvals from Slack, once the pilots show how often a person is asked</li>
+        </ul>
+        <p class="note">Early software: not yet independently audited, no compliance certification.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="founding">
+    <h2>Founding partners: three places</h2>
+    <p><strong>$500 for three months, then $200 a month.</strong> Hands-on setup on your infrastructure (a container you run, or we deploy it into your own cloud account), a weekly call, your priorities first on the roadmap, and each client's month-end statement from the first month. We say the continuation price now so there is no surprise later. Self-hosting stays free for everyone, now and later.</p>
+    <form action="https://formspree.io/f/maeeqqan" method="POST">
+      <input type="hidden" name="_subject" value="SpendMarshal: founding partner enquiry">
+      <label for="email">Work email</label>
+      <input id="email" name="email" type="email" required autocomplete="email">
+      <label for="spend">Roughly what did your agents spend on model calls last month?</label>
+      <select id="spend" name="spend">
+        <option>Under $1,000</option><option>$1,000 to $10,000</option><option>$10,000 to $100,000</option><option>Over $100,000</option><option>We don't know</option>
+      </select>
+      <label for="story">What went wrong, or what were you asked to explain?</label>
+      <textarea id="story" name="story"></textarea>
+      <button type="submit">Talk to us (20 minutes)</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <details><summary>Why not just use the budgets in LiteLLM or my gateway?</summary><p>Keep them as a backstop. They cap spend. This adds delegation that only narrows, a named approver above your threshold, and a record someone outside your company can verify.</p></details>
+    <details><summary>Does any of my data or traffic go to you?</summary><p>No. It runs on your infrastructure, and model calls go from your proxy to your providers as before.</p></details>
+    <details><summary>Does it hold money or keys?</summary><p>No. For model spend nothing moves; it decides, records and asks for approval. Your provider keys stay where they are.</p></details>
+    <details><summary>Can it govern agents that pay for APIs directly?</summary><p>Yes, optionally: it already supports the x402, MPP and L402 payment protocols, with the same policy and the same record.</p></details>
+    <details><summary>What happens if the firewall is down?</summary><p>The hook will let you choose: block calls until it is back (the default), or let them through and record the gap.</p></details>
+  </section>
+
+  <footer>
+    <p>SpendMarshal. Open source under Apache-2.0. Source code: <a href="https://github.com/spendmarshal">github.com/spendmarshal</a>. Contact: hello@spendmarshal.com</p>
+  </footer>
+</main>
+</body>
+</html>
